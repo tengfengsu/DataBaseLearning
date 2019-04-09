@@ -49,3 +49,25 @@ begin tran update ... rollback
 ```
 update OD set dicount+=0.5 from dbo.OrderDetails as OD join dbo.Orders as O on OD.orderid=O.orderid where O.custid=1
 ```
+### Delete
+基本的删除,句式：
+```
+delete from target _table where ...
+```
+基于连接的删除(先from，后where，再delete)，句式：
+```
+delete from tableA from tableA as A inner join tableB as B on A.field1=B.field1 where B.field2>25
+```
+```
+delete A from tableA as A inner join tableB as B on A.field1=B.field2 where B.field2>25
+```
+删除符合条件的部分数据，句式：
+```
+delete TOP(20) from tableA where field1>25
+```
+
+### Truncate
+truncate会删除表中所有的数据并重置表结构（删掉表然后重建）。当目标表被外键约束引用时，即使引用表（父表）为空或外键被禁用，也不运用使用truncate删除表（可以通过建一个虚拟表，带有指向引用表的外键（可以禁止外键以防影响性能），以此来避免truncate的误操作）。
+```
+truncate table target_table;
+```
