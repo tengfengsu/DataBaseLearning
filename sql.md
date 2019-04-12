@@ -71,3 +71,88 @@ truncate会删除表中所有的数据并重置表结构（删掉表然后重建
 ```
 truncate table target_table;
 ```
+### Merge
+merge语句可以对（insert、update和delete）进行组合（以分号结束merge语句），句式：
+```
+merge into tableA as A using tableB as B on A.field1=B.field1
+--源表中的数据与目标表相匹配
+when matched then 
+          update set A.field2=B.field2
+--源表中的数据与目标表不匹配
+when not mathed then
+          insert(field1,field2) values(B.field1,B.field2)
+--目标表中的数据不被源表匹配
+when not matched by source then
+           delete;
+```
+
+### 通过表表达式修改数据
+```
+with temp as
+(
+select custid,OD.orderid,discount,discount+1 AS newDiscount FORM dbo.OrderDetails AS OD JOIN dbo.Orders AS O ON OD.orderid=O.orderid WHERE  O.cusstid=1
+)
+UPDATE Temp SET discount=newDiscount;
+```
+```
+update Temp set discount=newDiscount From
+(
+select custid,OD.orderid,discount,discount+1 as newDiscount from dbo.OrderDetails AS OD JOIN
+dbo.orders AS O on od.orderid=O.orderid WHERE o.cusstid=1
+)AS Temp;
+```
+- #top&offset-fetch
+```
+with temp as
+(
+select top(50) * from table order by orderid desc
+)
+update temp set freight+=10.00
+```
+```
+with temp as 
+(
+select * from tableA order by orderid desc
+offset 0 rows fetch first 50 rows only
+)
+update temp set freight+=10.00;
+```
+
+- #output
+句式：
+```
+insert/delete/update/merge
+output 
+-- 输出修改前的数据
+deleted
+-- 输出修改后的数据
+inserted
+where...
+```
+示例代码：
+```
+ use wjchi;
+insert into dbo.uaddress
+(
+    Id,
+    ShortAddress,
+     LongAddress
+)
+output inserted.Id,inserted.ShortAddress,inserted.LongAddress
+values
+(
+    NEWID(),
+    N‘临时地址’,
+    N'上海市，临时地址'
+)；
+```
+```
+use wjchi;
+
+update dbo.UserInfo set age=30 
+-- 输出修改前的行
+output Deleted.Name as old_age,deleted.age as old_age,
+-- 输出修改后的行
+inserted.name as new_name,inserted.age as new_age
+where name='雪飞鸿'；
+```
