@@ -1,4 +1,4 @@
-﻿### Insert
+### Insert
 插入单条数据,句式:
 ```
 insert into table_name(field1,field2,field3...) values(value1,value2,value3...)
@@ -101,7 +101,7 @@ select custid,OD.orderid,discount,discount+1 as newDiscount from dbo.OrderDetail
 dbo.orders AS O on od.orderid=O.orderid WHERE o.cusstid=1
 )AS Temp;
 ```
-- #top&offset-fetch
+- # top&offset-fetch
 ```
 with temp as
 (
@@ -118,7 +118,7 @@ offset 0 rows fetch first 50 rows only
 update temp set freight+=10.00;
 ```
 
-- #output
+- # output
 句式：
 ```
 insert/delete/update/merge
